@@ -5,7 +5,7 @@
     <div class="card">
       <div class="card-header bg-dark text-white">New Complaint</div>
       <div class="card-body">
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
           {{ form.hidden_tag() }}
           <div class="mb-3">
             {{ form.category.label(class="form-label") }} {{
@@ -14,6 +14,11 @@
           <div class="mb-3">
             {{ form.description.label(class="form-label") }} {{
             form.description(class="form-control", rows=4) }}
+          </div>
+          <div class="mb-3">
+            {{ form.evidence.label(class="form-label") }} {{
+            form.evidence(class="form-control") }}
+            <small class="text-muted">Upload image evidence (JPG, PNG, JPEG)</small>
           </div>
           {{ form.submit(class="btn btn-dark w-100") }}
         </form>
@@ -30,6 +35,7 @@
             <tr>
               <th>Category</th>
               <th>Description</th>
+              <th>Evidence</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -38,6 +44,15 @@
             <tr>
               <td>{{ c.category }}</td>
               <td>{{ c.description }}</td>
+              <td>
+                {% if c.image_file and c.image_file != 'default.jpg' %}
+                <a
+                  href="{{ url_for('static', filename='uploads/' + c.image_file) }}"
+                  target="_blank"
+                  >View</a
+                >
+                {% else %} - {% endif %}
+              </td>
               <td>
                 <span
                   class="badge {% if c.status == 'Pending' %}bg-warning {% elif c.status == 'In Progress' %}bg-info {% else %}bg-success{% endif %}"

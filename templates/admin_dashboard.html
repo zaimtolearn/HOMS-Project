@@ -9,9 +9,11 @@
       <thead class="table-dark">
         <tr>
           <th>ID</th>
+          <th>Location</th>
+          <th>Student</th>
           <th>Category</th>
           <th>Description</th>
-          <th>Matric No</th>
+          <th>Evidence</th>
           <th>Status</th>
           <th>Actions</th>
         </tr>
@@ -20,9 +22,23 @@
         {% for c in complaints %}
         <tr>
           <td>{{ c.id }}</td>
+          <td>{{ c.user.hostel_name }} - {{ c.user.room_number }}</td>
+          <td>
+            {{ c.user.full_name }}<br />
+            <small class="text-muted">{{ c.user.matric_no }}</small>
+          </td>
           <td>{{ c.category }}</td>
           <td>{{ c.description }}</td>
-          <td>{{ c.user_id }}</td>
+          <td>
+            {% if c.image_file and c.image_file != 'default.jpg' %}
+            <a
+              href="{{ url_for('static', filename='uploads/' + c.image_file) }}"
+              target="_blank"
+              class="btn btn-sm btn-outline-primary"
+              >View</a
+            >
+            {% else %} - {% endif %}
+          </td>
           <td>
             <span
               class="badge {% if c.status == 'Pending' %}bg-warning {% elif c.status == 'In Progress' %}bg-info {% else %}bg-success{% endif %}"

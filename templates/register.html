@@ -7,8 +7,24 @@
         <form method="POST">
           {{ form.hidden_tag() }}
           <div class="mb-3">
+            {{ form.full_name.label(class="form-label") }} {{
+            form.full_name(class="form-control") }}
+          </div>
+          <div class="mb-3">
+            {{ form.email.label(class="form-label") }} {{
+            form.email(class="form-control") }}
+          </div>
+          <div class="mb-3">
             {{ form.matric_no.label(class="form-label") }} {{
             form.matric_no(class="form-control") }}
+          </div>
+          <div class="mb-3">
+            {{ form.hostel_name.label(class="form-label") }} {{
+            form.hostel_name(class="form-select") }}
+          </div>
+          <div class="mb-3">
+            {{ form.room_number.label(class="form-label") }} {{
+            form.room_number(class="form-control") }}
           </div>
           <div class="mb-3">
             {{ form.password.label(class="form-label") }} {{

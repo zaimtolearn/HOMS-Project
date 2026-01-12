@@ -4,3 +4,7 @@ __pycache__/
 .env
 *.db
 instance/
+
+# Ignore uploaded images but keep the directory structure
+static/uploads/*
+!static/uploads/.gitkeep

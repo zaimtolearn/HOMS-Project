@@ -3,6 +3,7 @@ from flask import Flask, render_template, redirect, url_for, flash, request, ses
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename  # New Import
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
 from datetime import timedelta
@@ -18,6 +19,8 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10) # Rubric: Session Timeout
+# Configuration for Image Uploads
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 # Initialize Extensions
 db.init_app(app)
@@ -56,10 +59,23 @@ def register():
             flash('Matric number already exists!', 'danger')
             return redirect(url_for('register'))
         
+        # Check if email exists
+        if User.query.filter_by(email=form.email.data).first():
+            flash('Email already exists!', 'danger')
+            return redirect(url_for('register'))
+        
         # Hash Password (Rubric: Security Measure #1)
         hashed_pw = generate_password_hash(form.password.data, method='pbkdf2:sha256')
         
-        new_user = User(matric_no=form.matric_no.data, password=hashed_pw, role=form.role.data)
+        new_user = User(
+            full_name=form.full_name.data,
+            email=form.email.data,
+            matric_no=form.matric_no.data,
+            hostel_name=form.hostel_name.data,
+            room_number=form.room_number.data,
+            password=hashed_pw,
+            role=form.role.data
+        )
         db.session.add(new_user)
         db.session.commit()
         
@@ -102,9 +118,19 @@ def student_dashboard():
     
     form = ComplaintForm()
     if form.validate_on_submit():
+        filename = None
+        if form.evidence.data:
+            file = form.evidence.data
+            filename = secure_filename(file.filename)
+            # Make sure folder exists
+            if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                os.makedirs(app.config['UPLOAD_FOLDER'])
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
         new_complaint = Complaint(
             category=form.category.data,
             description=form.description.data,
+            image_file=filename,  # Save filename to DB
             user_id=current_user.id
         )
         db.session.add(new_complaint)
