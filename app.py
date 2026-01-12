@@ -64,6 +64,11 @@ def register():
             flash('Email already exists!', 'danger')
             return redirect(url_for('register'))
         
+        # Validate email domain
+        if not form.email.data.endswith('@student.usm.my'):
+            flash('Email must be @student.usm.my', 'danger')
+            return redirect(url_for('register'))
+        
         # Hash Password (Rubric: Security Measure #1)
         hashed_pw = generate_password_hash(form.password.data, method='pbkdf2:sha256')
         
@@ -74,7 +79,7 @@ def register():
             hostel_name=form.hostel_name.data,
             room_number=form.room_number.data,
             password=hashed_pw,
-            role=form.role.data
+            role='student'  # Always register as student
         )
         db.session.add(new_user)
         db.session.commit()
@@ -139,8 +144,64 @@ def student_dashboard():
         return redirect(url_for('student_dashboard'))
     
     # Show only own complaints
-    my_complaints = Complaint.query.filter_by(user_id=current_user.id).all()
+    my_complaints = Complaint.query.filter_by(user_id=current_user.id).order_by(Complaint.created_at.desc()).all()
     return render_template('student_dashboard.html', form=form, complaints=my_complaints)
+
+# --- STUDENT CRUD OPERATIONS ---
+@app.route('/student/complaint/edit/<int:complaint_id>', methods=['GET', 'POST'])
+@login_required
+def edit_complaint(complaint_id):
+    if current_user.role != 'student':
+        return redirect(url_for('admin_dashboard'))
+    
+    complaint = Complaint.query.get_or_404(complaint_id)
+    
+    # Ensure student can only edit their own complaints
+    if complaint.user_id != current_user.id:
+        flash('You can only edit your own complaints!', 'danger')
+        return redirect(url_for('student_dashboard'))
+    
+    form = ComplaintForm()
+    if form.validate_on_submit():
+        filename = complaint.image_file
+        if form.evidence.data:
+            file = form.evidence.data
+            filename = secure_filename(file.filename)
+            if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                os.makedirs(app.config['UPLOAD_FOLDER'])
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
+        complaint.category = form.category.data
+        complaint.description = form.description.data
+        complaint.image_file = filename
+        db.session.commit()
+        flash('Complaint updated successfully!', 'success')
+        return redirect(url_for('student_dashboard'))
+    
+    # Pre-populate form with existing data
+    elif request.method == 'GET':
+        form.category.data = complaint.category
+        form.description.data = complaint.description
+    
+    return render_template('edit_complaint.html', form=form, complaint=complaint)
+
+@app.route('/student/complaint/delete/<int:complaint_id>', methods=['POST'])
+@login_required
+def delete_complaint(complaint_id):
+    if current_user.role != 'student':
+        return redirect(url_for('admin_dashboard'))
+    
+    complaint = Complaint.query.get_or_404(complaint_id)
+    
+    # Ensure student can only delete their own complaints
+    if complaint.user_id != current_user.id:
+        flash('You can only delete your own complaints!', 'danger')
+        return redirect(url_for('student_dashboard'))
+    
+    db.session.delete(complaint)
+    db.session.commit()
+    flash('Complaint deleted successfully!', 'info')
+    return redirect(url_for('student_dashboard'))
 
 # --- ADMIN ROUTES ---
 @app.route('/admin/dashboard')
@@ -150,7 +211,7 @@ def admin_dashboard():
         return redirect(url_for('student_dashboard'))
     
     # Admin sees ALL complaints
-    all_complaints = Complaint.query.all()
+    all_complaints = Complaint.query.order_by(Complaint.created_at.desc()).all()
     return render_template('admin_dashboard.html', complaints=all_complaints)
 
 @app.route('/admin/update/<int:complaint_id>/<string:status>')
@@ -163,6 +224,19 @@ def update_status(complaint_id, status):
     complaint.status = status
     db.session.commit()
     flash(f'Complaint updated to {status}', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+# --- ADMIN CRUD OPERATIONS ---
+@app.route('/admin/complaint/delete/<int:complaint_id>', methods=['POST'])
+@login_required
+def admin_delete_complaint(complaint_id):
+    if current_user.role != 'admin':
+        return redirect(url_for('student_dashboard'))
+    
+    complaint = Complaint.query.get_or_404(complaint_id)
+    db.session.delete(complaint)
+    db.session.commit()
+    flash('Complaint deleted successfully!', 'info')
     return redirect(url_for('admin_dashboard'))
 
 @app.after_request

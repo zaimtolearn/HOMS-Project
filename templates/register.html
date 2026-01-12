@@ -12,7 +12,8 @@
           </div>
           <div class="mb-3">
             {{ form.email.label(class="form-label") }} {{
-            form.email(class="form-control") }}
+            form.email(class="form-control", type="email", placeholder="yourname@student.usm.my") }}
+            <small class="text-muted">Must be @student.usm.my email</small>
           </div>
           <div class="mb-3">
             {{ form.matric_no.label(class="form-label") }} {{
@@ -28,18 +29,11 @@
           </div>
           <div class="mb-3">
             {{ form.password.label(class="form-label") }} {{
-            form.password(class="form-control") }}
+            form.password(class="form-control", type="password") }}
           </div>
           <div class="mb-3">
             {{ form.confirm_password.label(class="form-label") }} {{
-            form.confirm_password(class="form-control") }}
-          </div>
-          <div class="mb-3">
-            {{ form.role.label(class="form-label") }} {{
-            form.role(class="form-select") }}
-            <small class="text-muted"
-              >Select 'Admin' to test admin features.</small
-            >
+            form.confirm_password(class="form-control", type="password") }}
           </div>
           {{ form.submit(class="btn btn-success w-100") }}
         </form>
