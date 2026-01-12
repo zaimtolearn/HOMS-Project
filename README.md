@@ -57,15 +57,17 @@ Follow these steps to run the project on your machine:
 
    ```
 
-   # Activate Windows:
+   **Activate Windows:**
 
    ```bash
    venv\Scripts\activate
    ```
 
-   # Activate Mac/Linux:
+   **Activate Mac/Linux:**
 
+   ```bash
    source venv/bin/activate
+   ```
 
 3. **install dependencies**
 
