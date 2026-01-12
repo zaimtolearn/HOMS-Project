@@ -10,11 +10,42 @@
     />
   </head>
   <body>
-    <nav class="navbar navbar-dark bg-dark mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
       <div class="container">
         <a class="navbar-brand" href="/">HOMS USM</a>
+        <div class="navbar-nav ms-auto">
+          {% if current_user.is_authenticated %}
+          <span class="nav-item nav-link text-light"
+            >Hi, {{ current_user.role }}</span
+          >
+          {% if current_user.role == 'admin' %}
+          <a class="nav-link" href="{{ url_for('admin_dashboard') }}"
+            >Dashboard</a
+          >
+          {% else %}
+          <a class="nav-link" href="{{ url_for('student_dashboard') }}"
+            >My Dashboard</a
+          >
+          {% endif %}
+          <a
+            class="nav-link btn btn-danger btn-sm text-white ms-2"
+            href="{{ url_for('logout') }}"
+            >Logout</a
+          >
+          {% else %}
+          <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+          <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+          {% endif %}
+        </div>
       </div>
     </nav>
+
+    <div class="container">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %} {% endif %} {% endwith %}
+    </div>
 
     <div class="container">{% block content %}{% endblock %}</div>
   </body>
