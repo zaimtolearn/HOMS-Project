@@ -130,6 +130,16 @@ def update_status(complaint_id, status):
     flash(f'Complaint updated to {status}', 'success')
     return redirect(url_for('admin_dashboard'))
 
+@app.after_request
+def add_security_headers(response):
+    # Enforce HTTPS (HSTS)
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    # Prevent Clickjacking
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    # Prevent MIME-type sniffing
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    return response
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
