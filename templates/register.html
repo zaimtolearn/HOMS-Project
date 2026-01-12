@@ -1,0 +1,34 @@
+{% extends "base.html" %} {% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow">
+      <div class="card-header bg-success text-white"><h3>Register</h3></div>
+      <div class="card-body">
+        <form method="POST">
+          {{ form.hidden_tag() }}
+          <div class="mb-3">
+            {{ form.matric_no.label(class="form-label") }} {{
+            form.matric_no(class="form-control") }}
+          </div>
+          <div class="mb-3">
+            {{ form.password.label(class="form-label") }} {{
+            form.password(class="form-control") }}
+          </div>
+          <div class="mb-3">
+            {{ form.confirm_password.label(class="form-label") }} {{
+            form.confirm_password(class="form-control") }}
+          </div>
+          <div class="mb-3">
+            {{ form.role.label(class="form-label") }} {{
+            form.role(class="form-select") }}
+            <small class="text-muted"
+              >Select 'Admin' to test admin features.</small
+            >
+          </div>
+          {{ form.submit(class="btn btn-success w-100") }}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
