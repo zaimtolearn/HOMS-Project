@@ -80,4 +80,4 @@ Follow these steps to run the project on your machine:
 5. **Run the app**
    ```bash
    python app.py
-   ```
+   ``` 

@@ -3,6 +3,7 @@ from flask import Flask, render_template, redirect, url_for, flash, request, ses
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename  # New Import
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
 from datetime import timedelta
@@ -18,6 +19,8 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10) # Rubric: Session Timeout
+# Configuration for Image Uploads
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 # Initialize Extensions
 db.init_app(app)
@@ -56,10 +59,28 @@ def register():
             flash('Matric number already exists!', 'danger')
             return redirect(url_for('register'))
         
+        # Check if email exists
+        if User.query.filter_by(email=form.email.data).first():
+            flash('Email already exists!', 'danger')
+            return redirect(url_for('register'))
+        
+        # Validate email domain
+        if not form.email.data.endswith('@student.usm.my'):
+            flash('Email must be @student.usm.my', 'danger')
+            return redirect(url_for('register'))
+        
         # Hash Password (Rubric: Security Measure #1)
         hashed_pw = generate_password_hash(form.password.data, method='pbkdf2:sha256')
         
-        new_user = User(matric_no=form.matric_no.data, password=hashed_pw, role=form.role.data)
+        new_user = User(
+            full_name=form.full_name.data,
+            email=form.email.data,
+            matric_no=form.matric_no.data,
+            hostel_name=form.hostel_name.data,
+            room_number=form.room_number.data,
+            password=hashed_pw,
+            role='student'  # Always register as student
+        )
         db.session.add(new_user)
         db.session.commit()
         
@@ -102,9 +123,19 @@ def student_dashboard():
     
     form = ComplaintForm()
     if form.validate_on_submit():
+        filename = None
+        if form.evidence.data:
+            file = form.evidence.data
+            filename = secure_filename(file.filename)
+            # Make sure folder exists
+            if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                os.makedirs(app.config['UPLOAD_FOLDER'])
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
         new_complaint = Complaint(
             category=form.category.data,
             description=form.description.data,
+            image_file=filename,  # Save filename to DB
             user_id=current_user.id
         )
         db.session.add(new_complaint)
@@ -113,8 +144,64 @@ def student_dashboard():
         return redirect(url_for('student_dashboard'))
     
     # Show only own complaints
-    my_complaints = Complaint.query.filter_by(user_id=current_user.id).all()
+    my_complaints = Complaint.query.filter_by(user_id=current_user.id).order_by(Complaint.created_at.desc()).all()
     return render_template('student_dashboard.html', form=form, complaints=my_complaints)
+
+# --- STUDENT CRUD OPERATIONS ---
+@app.route('/student/complaint/edit/<int:complaint_id>', methods=['GET', 'POST'])
+@login_required
+def edit_complaint(complaint_id):
+    if current_user.role != 'student':
+        return redirect(url_for('admin_dashboard'))
+    
+    complaint = Complaint.query.get_or_404(complaint_id)
+    
+    # Ensure student can only edit their own complaints
+    if complaint.user_id != current_user.id:
+        flash('You can only edit your own complaints!', 'danger')
+        return redirect(url_for('student_dashboard'))
+    
+    form = ComplaintForm()
+    if form.validate_on_submit():
+        filename = complaint.image_file
+        if form.evidence.data:
+            file = form.evidence.data
+            filename = secure_filename(file.filename)
+            if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                os.makedirs(app.config['UPLOAD_FOLDER'])
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
+        complaint.category = form.category.data
+        complaint.description = form.description.data
+        complaint.image_file = filename
+        db.session.commit()
+        flash('Complaint updated successfully!', 'success')
+        return redirect(url_for('student_dashboard'))
+    
+    # Pre-populate form with existing data
+    elif request.method == 'GET':
+        form.category.data = complaint.category
+        form.description.data = complaint.description
+    
+    return render_template('edit_complaint.html', form=form, complaint=complaint)
+
+@app.route('/student/complaint/delete/<int:complaint_id>', methods=['POST'])
+@login_required
+def delete_complaint(complaint_id):
+    if current_user.role != 'student':
+        return redirect(url_for('admin_dashboard'))
+    
+    complaint = Complaint.query.get_or_404(complaint_id)
+    
+    # Ensure student can only delete their own complaints
+    if complaint.user_id != current_user.id:
+        flash('You can only delete your own complaints!', 'danger')
+        return redirect(url_for('student_dashboard'))
+    
+    db.session.delete(complaint)
+    db.session.commit()
+    flash('Complaint deleted successfully!', 'info')
+    return redirect(url_for('student_dashboard'))
 
 # --- ADMIN ROUTES ---
 @app.route('/admin/dashboard')
@@ -124,7 +211,7 @@ def admin_dashboard():
         return redirect(url_for('student_dashboard'))
     
     # Admin sees ALL complaints
-    all_complaints = Complaint.query.all()
+    all_complaints = Complaint.query.order_by(Complaint.created_at.desc()).all()
     return render_template('admin_dashboard.html', complaints=all_complaints)
 
 @app.route('/admin/update/<int:complaint_id>/<string:status>')
@@ -137,6 +224,19 @@ def update_status(complaint_id, status):
     complaint.status = status
     db.session.commit()
     flash(f'Complaint updated to {status}', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+# --- ADMIN CRUD OPERATIONS ---
+@app.route('/admin/complaint/delete/<int:complaint_id>', methods=['POST'])
+@login_required
+def admin_delete_complaint(complaint_id):
+    if current_user.role != 'admin':
+        return redirect(url_for('student_dashboard'))
+    
+    complaint = Complaint.query.get_or_404(complaint_id)
+    db.session.delete(complaint)
+    db.session.commit()
+    flash('Complaint deleted successfully!', 'info')
     return redirect(url_for('admin_dashboard'))
 
 @app.after_request
