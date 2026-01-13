@@ -1,0 +1,100 @@
+/* static/style.css */
+
+/* 1. USM Colors & Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
+
+:root {
+    --usm-purple: #5D3FD3;
+    --usm-orange: #F58220;
+    --bg-grey: #f4f6f9;
+}
+
+body {
+    background-color: var(--bg-grey) !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 2. Main Card Container */
+.portal-container {
+    margin-top: 50px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    overflow: hidden;
+    min-height: 600px;
+}
+
+/* 3. Left Side (Login) */
+.login-section {
+    padding: 50px;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* FORCE LOGO SIZE - This fixes the "Huge Logo" problem */
+.usm-logo-img {
+    width: 150px !important;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.brand-title {
+    color: var(--usm-purple);
+    font-weight: 700;
+}
+
+/* 4. Buttons */
+.btn-usm {
+    background-color: var(--usm-orange);
+    color: white;
+    border: none;
+    padding: 12px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.btn-usm:hover {
+    background-color: #d96e11;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* 5. Right Side (Announcements) */
+.announcement-section {
+    background-color: #fafafa;
+    border-left: 1px solid #eee;
+    padding: 50px;
+}
+
+.announcement-item {
+    background: white;
+    border-left: 5px solid var(--usm-purple);
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.date-badge {
+    background: var(--usm-purple);
+    color: white;
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.news-link {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    display: block;
+    margin-top: 5px;
+}
+
+.news-link:hover {
+    color: var(--usm-orange);
+}
