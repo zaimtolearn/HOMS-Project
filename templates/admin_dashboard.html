@@ -1,83 +1,100 @@
 {% extends "base.html" %} {% block content %}
-<h2 class="mb-4">
-  Admin Dashboard <small class="text-muted">(Maintenance Dept)</small>
-</h2>
 
-<div class="card shadow">
-  <div class="card-body">
-    <table class="table table-hover">
-      <thead class="table-dark">
-        <tr>
-          <th>Date</th>
-          <th>Location</th>
-          <th>Student</th>
-          <th>Category</th>
-          <th>Description</th>
-          <th>Evidence</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for c in complaints %}
-        <tr>
-          <td>{{ c.created_at.strftime('%d/%m/%Y') if c.created_at else '-' }}</td>
-          <td>{{ c.user.hostel_name }} - {{ c.user.room_number }}</td>
-          <td>
-            {{ c.user.full_name }}<br />
-            <small class="text-muted">{{ c.user.matric_no }}</small>
-          </td>
-          <td>{{ c.category }}</td>
-          <td>{{ c.description[:40] }}{% if c.description|length > 40 %}...{% endif %}</td>
-          <td>
-            {% if c.image_file and c.image_file != 'default.jpg' %}
-            <a
-              href="{{ url_for('static', filename='uploads/' + c.image_file) }}"
-              target="_blank"
-              class="btn btn-sm btn-outline-primary"
-              >View</a
-            >
-            {% else %} - {% endif %}
-          </td>
-          <td>
-            <span
-              class="badge {% if c.status == 'Pending' %}bg-warning {% elif c.status == 'In Progress' %}bg-info {% else %}bg-success{% endif %}"
-            >
-              {{ c.status }}
-            </span>
-          </td>
-          <td>
-            <div class="dropdown">
-              <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ c.id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                Actions
-              </button>
-              <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ c.id }}">
-                <li>
-                  <a class="dropdown-item" href="{{ url_for('update_status', complaint_id=c.id, status='In Progress') }}">
-                    <i class="bi bi-play-circle"></i> Start
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{{ url_for('update_status', complaint_id=c.id, status='Resolved') }}">
-                    <i class="bi bi-check-circle"></i> Resolve
-                  </a>
-                </li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                  <form method="POST" action="{{ url_for('admin_delete_complaint', complaint_id=c.id) }}" style="display:inline;" class="w-100">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                    <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Are you sure you want to delete this complaint?')">
-                      <i class="bi bi-trash"></i> Delete
-                    </button>
-                  </form>
-                </li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="fw-bold" style="color: var(--usm-purple);"><i class="fa-solid fa-screwdriver-wrench"></i> Admin Dashboard</h2>
+        <p class="text-muted">Manage complaints and update status.</p>
+    </div>
+</div>
+
+<div class="card card-usm shadow" style="min-height: 80vh;">  <div class="card-body p-0">
+    <div class="table-responsive">
+        <table class="table table-usm table-hover mb-0 align-middle">
+        <thead>
+            <tr>
+            <th class="ps-4">Date</th>
+            <th>Location</th>
+            <th>Student</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Evidence</th>
+            <th>Status</th>
+            <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in complaints %}
+            <tr>
+            <td class="ps-4 text-muted small">{{ c.created_at.strftime('%d/%m/%Y') if c.created_at else '-' }}</td>
+            
+            <td>
+                <strong>{{ c.user.hostel_name }}</strong><br>
+                <span class="small text-muted">Room {{ c.user.room_number }}</span>
+            </td>
+            
+            <td>
+                {{ c.user.full_name }}<br />
+                <small class="text-muted">{{ c.user.matric_no }}</small>
+            </td>
+            
+            <td><span class="badge bg-light text-dark border">{{ c.category }}</span></td>
+            
+            <td class="small text-muted" style="max-width: 200px;">
+                {{ c.description[:40] }}{% if c.description|length > 40 %}...{% endif %}
+            </td>
+            
+            <td>
+                {% if c.image_file and c.image_file != 'default.jpg' %}
+                <a href="{{ url_for('static', filename='uploads/' + c.image_file) }}" target="_blank" class="text-primary text-decoration-none">
+                    <i class="fa-solid fa-image"></i> View
+                </a>
+                {% else %} - {% endif %}
+            </td>
+            
+            <td>
+                {% if c.status == 'Pending' %}
+                    <span class="badge bg-warning text-dark">Pending</span>
+                {% elif c.status == 'In Progress' %}
+                    <span class="badge bg-info text-dark">In Progress</span>
+                {% else %}
+                    <span class="badge bg-success">Resolved</span>
+                {% endif %}
+            </td>
+            
+            <td>
+                <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+                
+                <ul class="dropdown-menu shadow">
+                    <li>
+                    <a class="dropdown-item text-info" href="{{ url_for('update_status', complaint_id=c.id, status='In Progress') }}">
+                        <i class="fa-solid fa-person-digging me-2"></i> Start Job
+                    </a>
+                    </li>
+                    <li>
+                    <a class="dropdown-item text-success" href="{{ url_for('update_status', complaint_id=c.id, status='Resolved') }}">
+                        <i class="fa-solid fa-check-circle me-2"></i> Mark Resolved
+                    </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                    <form method="POST" action="{{ url_for('admin_delete_complaint', complaint_id=c.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Delete this complaint?')">
+                            <i class="fa-solid fa-trash me-2"></i> Delete
+                        </button>
+                    </form>
+                    </li>
+                </ul>
+                </div>
+            </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
   </div>
 </div>
 {% endblock %}

@@ -73,6 +73,10 @@ body {
     background-color: var(--usm-purple-light);
 }
 
+.table-usm td, .table-usm th {
+    padding: 40px 20px; /* Adds breathing room inside the cells */
+}
+
 /* --- 6. LANDING PAGE SPECIFIC (Kept from before) --- */
 .portal-container {
     margin-top: 50px;
@@ -82,9 +86,46 @@ body {
     overflow: hidden;
     min-height: 600px;
 }
-.login-section { padding: 50px; display: flex; flex-direction: column; justify-content: center; }
-.announcement-section { background-color: #fafafa; border-left: 1px solid #eee; padding: 50px; }
-.usm-logo-img { width: 150px !important; height: auto; margin-bottom: 20px; }
-.announcement-item { background: white; border-left: 5px solid var(--usm-purple); padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-.date-badge { background: var(--usm-purple); color: white; font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
-.news-link { text-decoration: none; color: #333; font-weight: 500; display: block; margin-top: 5px; }
+
+.login-section { 
+    padding: 50px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+}
+
+.announcement-section { 
+    background-color: #fafafa; 
+    border-left: 1px solid #eee;
+     padding: 50px; 
+    }
+
+.usm-logo-img { 
+    width: 150px !important; 
+    height: auto; 
+    margin-bottom: 20px; 
+}
+
+.announcement-item { 
+    background: white; 
+    border-left: 5px solid var(--usm-purple); 
+    padding: 15px; 
+    margin-bottom: 15px; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+}
+
+.date-badge { 
+    background: var(--usm-purple); 
+    color: white; font-size: 0.75rem; 
+    padding: 3px 8px; 
+    border-radius: 4px; 
+    font-weight: bold; 
+}
+
+.news-link { 
+    text-decoration: none; 
+    color: #333; 
+    font-weight: 500; 
+    display: block; 
+    margin-top: 5px; 
+}
