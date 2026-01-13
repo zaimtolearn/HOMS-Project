@@ -1,44 +1,66 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} 
+{% block content %}
 <div class="row justify-content-center">
-  <div class="col-md-6">
-    <div class="card shadow">
-      <div class="card-header bg-success text-white"><h3>Register</h3></div>
-      <div class="card-body">
+  <div class="col-lg-6 col-md-8">
+    
+    <div class="text-center mb-4">
+        <img src="{{ url_for('static', filename='usm_logo.png') }}" style="width: 200px;" alt="Logo">
+        <h3 class="fw-bold mt-2" style="color: var(--usm-purple);">Student Registration</h3>
+    </div>
+
+    <div class="card card-usm shadow-lg">
+      <div class="card-body p-5">
         <form method="POST">
           {{ form.hidden_tag() }}
+          
+          <h6 class="text-uppercase text-muted fw-bold mb-3 small">Personal Details</h6>
           <div class="mb-3">
-            {{ form.full_name.label(class="form-label") }} {{
-            form.full_name(class="form-control") }}
+            {{ form.full_name.label(class="form-label") }} 
+            {{ form.full_name(class="form-control bg-light", placeholder="e.g. Ali Bin Abu") }}
           </div>
+          <div class="row">
+              <div class="col-md-6 mb-3">
+                {{ form.email.label(class="form-label") }} 
+                {{ form.email(class="form-control bg-light") }}
+                <small class="text-danger" style="font-size: 0.8em;">* Must end with @student.usm.my</small>
+              </div>
+              <div class="col-md-6 mb-3">
+                {{ form.matric_no.label(class="form-label") }} 
+                {{ form.matric_no(class="form-control bg-light") }}
+              </div>
+          </div>
+
+          <h6 class="text-uppercase text-muted fw-bold mb-3 small mt-2">Hostel Details</h6>
+          <div class="row">
+              <div class="col-md-7 mb-3">
+                {{ form.hostel_name.label(class="form-label") }} 
+                {{ form.hostel_name(class="form-select bg-light") }}
+              </div>
+              <div class="col-md-5 mb-3">
+                {{ form.room_number.label(class="form-label") }} 
+                {{ form.room_number(class="form-control bg-light") }}
+              </div>
+          </div>
+
+          <h6 class="text-uppercase text-muted fw-bold mb-3 small mt-2">Security</h6>
           <div class="mb-3">
-            {{ form.email.label(class="form-label") }} {{
-            form.email(class="form-control", type="email", placeholder="yourname@student.usm.my") }}
-            <small class="text-muted">Must be @student.usm.my email</small>
+            {{ form.password.label(class="form-label") }} 
+            {{ form.password(class="form-control bg-light") }}
           </div>
-          <div class="mb-3">
-            {{ form.matric_no.label(class="form-label") }} {{
-            form.matric_no(class="form-control") }}
+          <div class="mb-4">
+            {{ form.confirm_password.label(class="form-label") }} 
+            {{ form.confirm_password(class="form-control bg-light") }}
           </div>
-          <div class="mb-3">
-            {{ form.hostel_name.label(class="form-label") }} {{
-            form.hostel_name(class="form-select") }}
-          </div>
-          <div class="mb-3">
-            {{ form.room_number.label(class="form-label") }} {{
-            form.room_number(class="form-control") }}
-          </div>
-          <div class="mb-3">
-            {{ form.password.label(class="form-label") }} {{
-            form.password(class="form-control", type="password") }}
-          </div>
-          <div class="mb-3">
-            {{ form.confirm_password.label(class="form-label") }} {{
-            form.confirm_password(class="form-control", type="password") }}
-          </div>
-          {{ form.submit(class="btn btn-success w-100") }}
+          
+          {{ form.submit(class="btn btn-usm w-100 py-2 fs-5") }}
         </form>
       </div>
     </div>
+    
+    <div class="text-center mt-3">
+        <p>Already have an account? <a href="{{ url_for('login') }}" style="color: var(--usm-orange);">Login Here</a></p>
+    </div>
+
   </div>
 </div>
 {% endblock %}

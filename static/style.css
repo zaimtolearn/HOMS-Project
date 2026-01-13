@@ -1,56 +1,57 @@
 /* static/style.css */
 
-/* 1. USM Colors & Fonts */
+/* --- 1. FONTS & VARIABLES --- */
 @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
 
 :root {
     --usm-purple: #5D3FD3;
     --usm-orange: #F58220;
+    --usm-purple-light: #f3f0ff; /* Light purple for backgrounds */
     --bg-grey: #f4f6f9;
 }
 
 body {
     background-color: var(--bg-grey) !important;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
 }
 
-/* 2. Main Card Container */
-.portal-container {
-    margin-top: 50px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-    overflow: hidden;
-    min-height: 600px;
+/* --- 2. GLOBAL NAVBAR (Replaces bg-dark) --- */
+.navbar-usm {
+    background: linear-gradient(90deg, var(--usm-purple) 0%, #4a32a8 100%) !important;
+    box-shadow: 0 4px 10px rgba(93, 63, 211, 0.2);
+    padding: 15px 0;
 }
 
-/* 3. Left Side (Login) */
-.login-section {
-    padding: 50px;
-    background: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-/* FORCE LOGO SIZE - This fixes the "Huge Logo" problem */
-.usm-logo-img {
-    width: 150px !important;
-    height: auto;
-    margin-bottom: 20px;
-}
-
-.brand-title {
-    color: var(--usm-purple);
+.navbar-brand {
     font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: 1px;
 }
 
-/* 4. Buttons */
+/* --- 3. UNIFIED CARD STYLE (Used everywhere) --- */
+.card-usm {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    overflow: hidden;
+    background: white;
+}
+
+.card-header-usm {
+    background: white;
+    border-bottom: 2px solid var(--usm-purple-light);
+    padding: 15px 20px;
+    font-weight: 700;
+    color: var(--usm-purple);
+}
+
+/* --- 4. BUTTONS --- */
 .btn-usm {
     background-color: var(--usm-orange);
     color: white;
     border: none;
-    padding: 12px;
+    padding: 10px 20px;
     font-weight: 600;
     border-radius: 6px;
     transition: all 0.3s ease;
@@ -62,39 +63,28 @@ body {
     transform: translateY(-2px);
 }
 
-/* 5. Right Side (Announcements) */
-.announcement-section {
-    background-color: #fafafa;
-    border-left: 1px solid #eee;
-    padding: 50px;
-}
-
-.announcement-item {
-    background: white;
-    border-left: 5px solid var(--usm-purple);
-    padding: 15px;
-    margin-bottom: 15px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.date-badge {
-    background: var(--usm-purple);
+/* --- 5. TABLES (Dashboard) --- */
+.table-usm thead {
+    background-color: var(--usm-purple);
     color: white;
-    font-size: 0.75rem;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-weight: bold;
-    text-transform: uppercase;
 }
 
-.news-link {
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    display: block;
-    margin-top: 5px;
+.table-usm tbody tr:hover {
+    background-color: var(--usm-purple-light);
 }
 
-.news-link:hover {
-    color: var(--usm-orange);
+/* --- 6. LANDING PAGE SPECIFIC (Kept from before) --- */
+.portal-container {
+    margin-top: 50px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    overflow: hidden;
+    min-height: 600px;
 }
+.login-section { padding: 50px; display: flex; flex-direction: column; justify-content: center; }
+.announcement-section { background-color: #fafafa; border-left: 1px solid #eee; padding: 50px; }
+.usm-logo-img { width: 150px !important; height: auto; margin-bottom: 20px; }
+.announcement-item { background: white; border-left: 5px solid var(--usm-purple); padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.date-badge { background: var(--usm-purple); color: white; font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
+.news-link { text-decoration: none; color: #333; font-weight: 500; display: block; margin-top: 5px; }
