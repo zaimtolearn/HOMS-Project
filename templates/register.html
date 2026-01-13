@@ -4,7 +4,7 @@
   <div class="col-lg-6 col-md-8">
     
     <div class="text-center mb-4">
-        <img src="{{ url_for('static', filename='usm_logo.png') }}" style="width: 80px;" alt="Logo">
+        <img src="{{ url_for('static', filename='usm_logo.png') }}" style="width: 200px;" alt="Logo">
         <h3 class="fw-bold mt-2" style="color: var(--usm-purple);">Student Registration</h3>
     </div>
 
@@ -22,6 +22,7 @@
               <div class="col-md-6 mb-3">
                 {{ form.email.label(class="form-label") }} 
                 {{ form.email(class="form-control bg-light") }}
+                <small class="text-danger" style="font-size: 0.8em;">* Must end with @student.usm.my</small>
               </div>
               <div class="col-md-6 mb-3">
                 {{ form.matric_no.label(class="form-label") }} 
